@@ -1,0 +1,30 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "CodeDNA API",
+    "description": "Local-first, privacy-preserving developer identity and code intelligence API",
+    "version": "1.0.0"
+  },
+  "servers": [{"url": "http://127.0.0.1:7842/api/v1", "description": "Local daemon (localhost only)"}],
+  "paths": {
+    "/status": {"get": {"summary": "Get daemon status", "operationId": "getStatus", "responses": {"200": {"description": "Daemon status", "content": {"application/json": {"schema": {"type": "object", "properties": {"status": {"type": "string"}, "db_version": {"type": "integer"}, "expected_schema_version": {"type": "integer"}, "rebuild_required": {"type": "boolean"}, "active_repos": {"type": "array", "items": {"$ref": "#/components/schemas/Repo"}}, "interrupted_jobs": {"type": "array", "items": {"type": "object"}}}}}}}}}},
+    "/repos": {
+      "get": {"summary": "List tracked repositories", "operationId": "listRepos", "responses": {"200": {"description": "List of repositories", "content": {"application/json": {"schema": {"type": "array", "items": {"$ref": "#/components/schemas/Repo"}}}}}}},
+      "post": {"summary": "Add repository", "operationId": "addRepo", "requestBody": {"required": true, "content": {"application/json": {"schema": {"type": "object", "required": ["path"], "properties": {"path": {"type": "string"}, "language": {"type": "string", "default": "python"}}}}}}, "responses": {"201": {"description": "Repository added"}}}}
+    },
+    "/repos/{repo_id}": {"delete": {"summary": "Untrack repository", "operationId": "removeRepo", "parameters": [{"name": "repo_id", "in": "path", "required": true, "schema": {"type": "string"}}], "responses": {"204": {"description": "Repository removed"}, "404": {"description": "Not found"}}}},
+    "/repos/{repo_id}/build": {"post": {"summary": "Enqueue baseline build", "operationId": "enqueueBuild", "parameters": [{"name": "repo_id", "in": "path", "required": true, "schema": {"type": "string"}}], "responses": {"200": {"description": "Job enqueued"}, "404": {"description": "Not found"}, "409": {"description": "Conflict"}}}},
+    "/jobs/{job_id}": {"get": {"summary": "Get job status", "operationId": "getJobStatus", "parameters": [{"name": "job_id", "in": "path", "required": true, "schema": {"type": "string"}}], "responses": {"200": {"description": "Job status"}, "404": {"description": "Not found"}}}},
+    "/scan/file": {"post": {"summary": "Scan file (fast path)", "operationId": "scanFile", "requestBody": {"required": true, "content": {"application/json": {"schema": {"type": "object", "required": ["repo_id", "file_path", "language"], "properties": {"repo_id": {"type": "string"}, "file_path": {"type": "string"}, "language": {"type": "string"}, "content_hash": {"type": "string"}}}}}}, "responses": {"200": {"description": "Scan result"}}}},
+    "/evolution/{repo_id}": {"get": {"summary": "Get evolution report", "operationId": "getEvolution", "parameters": [{"name": "repo_id", "in": "path", "required": true, "schema": {"type": "string"}}], "responses": {"200": {"description": "Evolution report"}}}},
+    "/export": {"post": {"summary": "Export data", "operationId": "exportData", "requestBody": {"required": true, "content": {"application/json": {"schema": {"type": "object", "required": ["repo_id", "confirmed"], "properties": {"repo_id": {"type": "string"}, "format": {"type": "string", "enum": ["json", "csv"], "default": "json"}, "include": {"type": "array", "items": {"type": "string"}, "default": ["fingerprint", "evolution", "scan_history"]}, "confirmed": {"type": "boolean"}}}}}}, "responses": {"200": {"description": "Export data"}, "400": {"description": "Export not confirmed"}}}},
+    "/config": {"get": {"summary": "Get configuration", "operationId": "getConfig", "responses": {"200": {"description": "Configuration values"}}}},
+    "/events": {"get": {"summary": "SSE event stream", "operationId": "streamEvents", "responses": {"200": {"description": "Event stream", "content": {"text/event-stream": {}}}}}}
+  },
+  "components": {
+    "schemas": {
+      "Repo": {"type": "object", "properties": {"id": {"type": "string"}, "path": {"type": "string"}, "name": {"type": "string"}, "language": {"type": "string"}, "created_at": {"type": "integer"}, "updated_at": {"type": "integer"}}},
+      "Error": {"type": "object", "properties": {"error": {"type": "object", "properties": {"code": {"type": "string"}, "message": {"type": "string"}, "detail": {"type": "object"}}}}}
+    }
+  }
+}

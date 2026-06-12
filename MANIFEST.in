@@ -1,0 +1,16 @@
+# Include SQL migrations in wheel builds
+include src/codedna/migrations/*.sql
+
+# Include scripts
+include scripts/*.sh
+include scripts/git-hooks/*
+
+# Include dashboard
+include src/codedna/dashboard/*
+
+# Include VS Code extension
+include ide-plugins/vscode/*
+
+# Include Rust scanner source for setuptools-rust build
+include rust-scanner/Cargo.toml
+include rust-scanner/src/main.rs

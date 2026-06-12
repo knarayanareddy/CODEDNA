@@ -1,0 +1,28 @@
+{
+  "name": "codedna",
+  "displayName": "CodeDNA",
+  "description": "Local-first, privacy-preserving developer identity and code intelligence",
+  "version": "0.1.0",
+  "publisher": "codedna",
+  "engines": { "vscode": "^1.75.0" },
+  "categories": ["Other", "Programming Languages"],
+  "activationEvents": ["onLanguage:python", "workspaceContains:**/*.py"],
+  "main": "./extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "CodeDNA",
+      "properties": {
+        "codedna.enabled": { "type": "boolean", "default": true, "description": "Enable CodeDNA code analysis" },
+        "codedna.inlineHints": { "type": "boolean", "default": true, "description": "Show inline DNA score hints" },
+        "codedna.daemonUrl": { "type": "string", "default": "http://127.0.0.1:7842", "description": "CodeDNA daemon URL" },
+        "codedna.autoScanOnSave": { "type": "boolean", "default": true, "description": "Automatically scan files on save" }
+      }
+    },
+    "commands": [
+      { "command": "codedna.scanFile", "title": "CodeDNA: Scan Current File" },
+      { "command": "codedna.showStatus", "title": "CodeDNA: Show Status" },
+      { "command": "codedna.openDashboard", "title": "CodeDNA: Open Dashboard" }
+    ],
+    "statusBar": [{ "id": "codedna.status", "alignment": "right", "text": "$(flame) CodeDNA", "tooltip": "Click to see CodeDNA status", "command": "codedna.showStatus" }]
+  }
+}

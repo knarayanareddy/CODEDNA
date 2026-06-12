@@ -1,0 +1,62 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel", "setuptools-rust>=1.6.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "codedna"
+version = "0.3.0"
+description = "Local-first, privacy-preserving developer identity and code intelligence tool"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "CodeDNA Contributors"}]
+keywords = ["developer", "identity", "code-analysis", "privacy", "local-first"]
+classifiers = ["Development Status :: 4 - Beta", "Intended Audience :: Developers", "License :: OSI Approved :: MIT License", "Programming Language :: Python :: 3", "Programming Language :: Python :: 3.10", "Programming Language :: Python :: 3.11", "Programming Language :: Python :: 3.12", "Operating System :: OS Independent"]
+dependencies = ["fastapi>=0.109.0", "uvicorn[standard]>=0.27.0", "sqlalchemy>=2.0.0", "apscheduler>=3.10.0", "python-dotenv>=1.0.0", "pydantic>=2.0.0", "psutil>=5.9.0", "sse-starlette>=2.0.0", "numpy>=1.24.0", "msgpack>=1.0.0"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4.0", "pytest-cov>=4.1.0", "pytest-asyncio>=0.23.0", "mypy>=1.8.0", "ruff>=0.2.0", "httpx>=0.26.0", "pytest-httpx>=0.28.0"]
+
+[project.scripts]
+codedna = "codedna.cli.main:main"
+
+[project.urls]
+Homepage = "https://github.com/knarayanareddy/CODEDNA"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-dir]
+"" = "src"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.package-data]
+codedna = ["py.typed", "migrations/*.sql", "dashboard/*.html"]
+
+# Rust extension configuration
+[tool.setuptools-rust]
+bindings = []  # No Python bindings needed, just build the binary
+crates = [
+    { name = "rust-scanner", path = "rust-scanner" },
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "C4", "SIM"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
